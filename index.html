@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rate Card Search</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    input[type="text"] {
+      width: 300px;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rate Card Search</h1>
+  <input type="text" id="searchInput" placeholder="Type keywords here...">
+  <table id="resultsTable">
+   >
+        <th>Service</th>
+        <th>Context</th>
+        <th>Configuration</th>
+        <th>Version</th>
+        <th>Run Time</th>
+        <th>Rate</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    fetch('rate_card_data.json')
+      .then(response => response.json())
+      .then(data => {
+        const searchInput = document.getElementById('searchInput');
+        const resultsTable = document.getElementById('resultsTable').getElementsByTagName('tbody')[0];
+
+        function filterResults() {
+          const keywords = searchInput.value.toLowerCase().split(',').map(k => k.trim());
+          resultsTable.innerHTML = '';
+
+          data.forEach(row => {
+            const rowText = Object.values(row).join(' ').toLowerCase();
+            const match = keywords.every(keyword => rowText.includes(keyword));
+
+            if (match) {
+              const newRow = resultsTable.insertRow();
+              Object.values(row).forEach(cellText => {
+                const newCell = newRow.insertCell();
+                newCell.textContent = cellText;
+              });
+            }
+          });
+        }
+
+        searchInput.addEventListener('input', filterResults);
+      });
+  </script>
+</body>
+</html>
